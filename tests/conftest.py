@@ -6,14 +6,15 @@ from app.main import app
 from app.core.security import create_access_token
 import uuid
 
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
 
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
+from app.core.database import engine
+
+@pytest_asyncio.fixture(autouse=True)
+async def clean_engine():
+    yield
+    await engine.dispose()
 
 @pytest_asyncio.fixture
 async def async_client():
